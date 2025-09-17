@@ -17,9 +17,44 @@ async function Page({ params }: { params: { id: string } }) {
   const viewer = await currentUser();
   const viewerId = viewer?.id || "";
 
-  const user = await prisma.user.findUnique({
-    where: { userName: params.id },
-  });
+  let user;
+  try {
+    user = await prisma.user.findUnique({
+      where: { userName: params.id },
+    });
+
+    // Fallback: if user not found by userName, check if viewer exists by id
+    if (!user && viewer) {
+      const existingUser = await prisma.user.findUnique({
+        where: { id: viewer.id },
+      });
+
+      if (existingUser) {
+        // Update userName if changed
+        user = await prisma.user.update({
+          where: { id: viewer.id },
+          data: {
+            userName: viewer.username || null,
+            email: viewer.emailAddresses[0]?.emailAddress || null,
+            imageUrl: viewer.imageUrl || null,
+          },
+        });
+      } else {
+        // Create new user
+        user = await prisma.user.create({
+          data: {
+            id: viewer.id,
+            email: viewer.emailAddresses[0]?.emailAddress || null,
+            userName: viewer.username || null,
+            imageUrl: viewer.imageUrl || null,
+          },
+        });
+      }
+    }
+  } catch (error) {
+    console.error("Database error:", error);
+    return <div className="my-60 flex justify-center items-center font-semibold text-3xl sm:text-4xl">Database Connection Error!</div>;
+  }
 
   if (!user) {
     return <div className="my-60 flex justify-center items-center font-semibold text-3xl sm:text-4xl">User Does Not Exist!</div>;

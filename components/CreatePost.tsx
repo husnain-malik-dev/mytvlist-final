@@ -7,20 +7,24 @@ import { ImageDown, Link2 } from "lucide-react";
 
 export function CreatePostCard() {
   return (
-    <Card className="px-4 py-2 flex items-center gap-x-4 w-[100%]">
+    <Card className="px-6 py-4 flex items-center gap-x-4 w-full bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors">
 
-      <Link href="/forums/create" className="w-full">
-        <Input placeholder="Create your forum" />
+      <Link href="/forums/create" className="flex-1">
+        <Input
+          placeholder="Create your forum discussion..."
+          className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 rounded-full h-12"
+          readOnly
+        />
       </Link>
 
-      <div className="flex items-center gap-x-4">
-        <Button variant="outline" size="icon" asChild>
+      <div className="flex items-center gap-x-2">
+        <Button variant="outline" size="icon" className="rounded-full border-gray-600 hover:bg-gray-600" asChild>
           <Link href="/forums/create">
             <ImageDown className="w-4 h-4" />
           </Link>
         </Button>
 
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size="icon" className="rounded-full border-gray-600 hover:bg-gray-600" asChild>
           <Link href="/forums/create">
             <Link2 className="w-4 h-4" />
           </Link>

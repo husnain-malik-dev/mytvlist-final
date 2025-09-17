@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { Movie } from "@/typings";
 import MovieCard from "./MovieCard";
 import { Switch } from "@/components/ui/switch";
@@ -8,16 +8,15 @@ import useEmblaCarousel from "embla-carousel-react";
 import Link from "next/link";
 import clsx from 'clsx';
 
-type Props = {
+interface MoviesCarouselProps {
   title?: string;
   movies: Movie[];
   isVertical?: boolean;
   onToggle?: () => void;
   isMovie?: boolean;
   showToggle?: boolean;
-  movieToggle?: boolean;
   className?: string;
-};
+}
 
 function MoviesCarousel({
   title,
@@ -26,46 +25,72 @@ function MoviesCarousel({
   onToggle,
   isMovie,
   showToggle = true,
-  movieToggle = true,
   className,
-}: Props) {
+}: MoviesCarouselProps) {
   const [emblaRef, embla] = useEmblaCarousel({
     loop: false,
     align: 'start',
     dragFree: true,
-    // direction: isVertical ? 'vertical' : 'horizontal',
   });
 
-  useEffect(() => {
-    if (embla) {
-     
-    }
+  const scrollPrev = useCallback(() => {
+    if (embla) embla.scrollPrev();
   }, [embla]);
 
+  const scrollNext = useCallback(() => {
+    if (embla) embla.scrollNext();
+  }, [embla]);
+
+  useEffect(() => {
+    if (!embla) return;
+
+    // Optional: Add keyboard navigation
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft') scrollPrev();
+      if (event.key === 'ArrowRight') scrollNext();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [embla, scrollPrev, scrollNext]);
+
+  if (!movies?.length) {
+    return null;
+  }
+
   return (
-    <div className={clsx("z-50 mt-10", className)}>
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold py-4">{title}</h2>
-        {showToggle && (
+    <section className={clsx("relative z-50 mt-10", className)}>
+      <header className="flex justify-between items-center mb-4">
+        {title && (
+          <h2 className="text-xl font-bold text-white">{title}</h2>
+        )}
+        {showToggle && onToggle && (
           <div className="flex items-center gap-2">
-            <span>{isMovie ? "Movie" : "TV"}</span>
-            <Switch className="mr-10" checked={!isMovie} onCheckedChange={onToggle} />
+            <span className="text-sm text-white">{isMovie ? "Movies" : "TV Shows"}</span>
+            <Switch
+              checked={!isMovie}
+              onCheckedChange={onToggle}
+              aria-label="Toggle between movies and TV shows"
+            />
           </div>
         )}
-      </div>
+      </header>
 
-      <div className={`embla ${isVertical ? 'embla--vertical' : ''}`} ref={emblaRef}>
-        <div className={`embla__container ${isVertical ? 'embla__container--vertical' : ''}`}>
-          {movies?.map((movie) => (
-            <div key={movie.id} className={`embla__slide ${isVertical ? 'embla__slide--vertical' : ''}`}>
-              <Link href={`/title/${movie.name ? 'tv' : 'movie'}/${(movie.name ?? movie.title)?.split(" ").join("_")}/${movie.id}`}>
+      <div className="embla overflow-hidden" ref={emblaRef}>
+        <div className="embla__container flex gap-4">
+          {movies.map((movie) => (
+            <div key={movie.id} className="embla__slide flex-shrink-0">
+              <Link
+                href={`/title/${movie.name ? 'tv' : 'movie'}/${(movie.name ?? movie.title)?.split(" ").join("_")}/${movie.id}`}
+                className="block"
+              >
                 <MovieCard movie={movie} />
               </Link>
             </div>
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 

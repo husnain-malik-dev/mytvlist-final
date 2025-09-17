@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import GenreDropdown from "./GenreDropdown";
 import SearchInput from "./SearchInput";
-import Logo from '../public/Logo.svg'
+import Logo from '../public/Logo.svg';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,10 +22,19 @@ import { currentUser } from "@clerk/nextjs/server";
 import { Button } from "./ui/button";
 
 async function Header() {
-
-  const user = await currentUser();
+  let user;
+  try {
+    user = await currentUser();
+  } catch (error) {
+    console.error("Clerk error:", error);
+    user = null;
+  }
   const userName = user?.username || '';
 
+  const navigationItems = [
+    { href: userName ? `/my-list/${userName}` : "/sign-in", label: "TV List", hiddenOnMobile: true },
+    { href: "/forums", label: "Forums", hiddenOnMobile: true },
+  ];
 
   return (
     <header className="fixed w-full z-20 top-0 flex items-center justify-between p-5 bg-gradient-to-t from-gray-200/0 via-gray-900/25 to-gray-900">
@@ -34,62 +43,65 @@ async function Header() {
           src={Logo}
           width={120}
           height={0}
-          alt="site logo"
-          className={"cursor-pointer invert md:ml-6"}
+          alt="My TV List Logo"
+          className="cursor-pointer invert md:ml-6"
         />
       </Link>
 
-      <div className="flex space-x-2 sm:space-x-4 justify-center items-center md:text-lg">
-        <div><Link className="hidden sm:block" href={userName ? `/my-list/${userName}` : "/sign-in"}>TV List</Link></div>
-        <div><Link className="hidden sm:block" href={`/forums`}>Forums</Link></div>
+      <nav className="flex space-x-2 sm:space-x-4 justify-center items-center md:text-lg">
+        {navigationItems.map((item) => (
+          <div key={item.href} className={item.hiddenOnMobile ? "hidden sm:block" : ""}>
+            <Link href={item.href}>{item.label}</Link>
+          </div>
+        ))}
+
         <div className="hidden sm:block">
-        <GenreDropdown />
+          <GenreDropdown />
         </div>
+
         <div className="sm:hidden">
-        <DropDownMobile />
+          <MobileDropdown userName={userName} />
         </div>
+
         <SearchInput />
-        <div className="block">
-        </div>
+
         <SignedOut>
-          <Link  href="/sign-in">
-            <Button variant={"outline"}>Sign in</Button>
-          </Link>     
+          <SignInButton>
+            <Button variant="outline" className="rounded-full">Sign in</Button>
+          </SignInButton>
         </SignedOut>
+
         <SignedIn>
           <UserButton />
         </SignedIn>
-      </div>
+      </nav>
     </header>
   );
 }
 
 export default Header;
 
-async function DropDownMobile() {
-
-  const user = await currentUser();
-  const userName = user?.username || '';
-
+async function MobileDropdown({ userName }: { userName: string }) {
+  const mobileItems = [
+    { href: `/my-list/${userName}`, label: "TV List" },
+    { href: "/forums", label: "Forums" },
+  ];
 
   return (
-    <div className="block sm:hidden">
-      <DropdownMenu>
+    <DropdownMenu>
       <DropdownMenuTrigger className="text-white flex justify-center items-center">
-      <ChevronDown className="ml-1" />
+        <ChevronDown className="ml-1" />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className="sm:hidden">
         <DropdownMenuLabel>Explore</DropdownMenuLabel>
         <DropdownMenuSeparator />
-          <DropdownMenuItem className="cursor-pointer " >
-          <Link className="" href={`/my-list/${userName}`}>TV List</Link>
+        {mobileItems.map((item) => (
+          <DropdownMenuItem key={item.href} className="cursor-pointer">
+            <Link href={item.href}>{item.label}</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer" >
-          <Link className="" href={`/forums`}>Forums</Link>
-          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
-    </div>
-  )
+  );
 }

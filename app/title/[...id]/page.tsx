@@ -48,15 +48,21 @@ async function Page({ params }: { params: { id: string } }) {
   const user = await currentUser();
   const userId = user?.id || "";
 
-  const userRating = await prisma.userlist.findUnique({
-    where: {
-      userId_mediaType_showId: {
-        userId,
-        mediaType,
-        showId,
+  let userRating;
+  try {
+    userRating = await prisma.userlist.findUnique({
+      where: {
+        userId_mediaType_showId: {
+          userId,
+          mediaType,
+          showId,
+        },
       },
-    },
-  });
+    });
+  } catch (error) {
+    console.error("Database error:", error);
+    userRating = null;
+  }
 
   return (
     <>

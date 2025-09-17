@@ -9,20 +9,29 @@ import {
   getTopRatedTv,
 } from "@/lib/getMovies";
 
-export default async function Home() {
-  const trendingMovies = await getTrendingMovies();
-  const topRatedMovies = await getTopRatedMovies();
-  const popularMovies = await getPopularMovies();
-  const trendingTv = await getTrendingTv();
-  const popularTv = await getPopularTv();
-  const topRatedTv = await getTopRatedTv();
-
+export default async function HomePage() {
+  // Fetch all movie and TV data in parallel for better performance
+  const [
+    trendingMovies,
+    topRatedMovies,
+    popularMovies,
+    trendingTv,
+    popularTv,
+    topRatedTv,
+  ] = await Promise.all([
+    getTrendingMovies(),
+    getTopRatedMovies(),
+    getPopularMovies(),
+    getTrendingTv(),
+    getPopularTv(),
+    getTopRatedTv(),
+  ]);
 
   return (
-    <main className="">
+    <main className="min-h-screen">
       <CarouselBannerWrapper />
 
-      <div className="flex flex-col space-y-2 xl:-mt-48 ml-4 md:ml-8 lg:ml-12">
+      <section className="relative z-10 -mt-48 px-4 md:px-8 lg:px-12">
         <MoviesCarouselClient
           trendingMovies={trendingMovies}
           topRatedMovies={topRatedMovies}
@@ -31,7 +40,7 @@ export default async function Home() {
           topRatedTv={topRatedTv}
           popularTv={popularTv}
         />
-      </div>
+      </section>
     </main>
   );
 }
