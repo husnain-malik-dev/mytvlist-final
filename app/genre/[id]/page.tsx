@@ -4,6 +4,7 @@ import { getDiscoverMovies } from "@/lib/getMovies";
 import Image from "next/image";
 import Link from "next/link";
 import getImagePath from "@/lib/getImagePath";
+import { Movie } from "@/typings";
 
 async function GenrePage({
   params: { id },
@@ -25,7 +26,7 @@ async function GenrePage({
 
           <div className="flex items-center justify-center pb-24 pt-16">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
-              {movies.map((movie) => (
+              {movies.map((movie: Movie) => (
                 <Link key={movie.id} href={`/title/${movie.name ? 'tv' : 'movie'}/${(movie.name ?? movie.title)?.split(" ").join("_")}/${movie.id}`} className="">
                   <div className="relative">
                     <Image
