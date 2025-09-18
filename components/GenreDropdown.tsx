@@ -11,14 +11,12 @@ import { ChevronDown } from 'lucide-react';
 import Link from "next/link";
 
 async function GenreDropdown() {
-  const url = new URL("https://api.themoviedb.org/3/genre/movie/list");
-  url.searchParams.set("api_key", process.env.TMDB_API_KEY!);
-  url.searchParams.set("language", "en-US");
-
+  const url = "https://api.themoviedb.org/3/genre/movie/list?language=en";
   const options: RequestInit = {
     method: "GET",
     headers: {
       accept: "application/json",
+      Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
     },
     next: {
       revalidate: 60 * 60 * 24, // 24 hours
