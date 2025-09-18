@@ -31,7 +31,7 @@ export default async function HomePage() {
     <main className="min-h-screen">
       <CarouselBannerWrapper />
 
-      <section className="relative z-10 -mt-48 px-4 md:px-8 lg:px-12">
+      <section className="relative z-10 md:-mt-48 pt-8 md:pt-0 px-4 md:px-8 lg:px-12">
         <MoviesCarouselClient
           trendingMovies={trendingMovies}
           topRatedMovies={topRatedMovies}

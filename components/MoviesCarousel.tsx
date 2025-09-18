@@ -59,7 +59,7 @@ function MoviesCarousel({
   }
 
   return (
-    <section className={clsx("relative z-50 mt-10", className)}>
+    <section className={clsx("relative z-50 mt-6 md:mt-10", className)}>
       <header className="flex justify-between items-center mb-4">
         {title && (
           <h2 className="text-xl font-bold text-white">{title}</h2>
