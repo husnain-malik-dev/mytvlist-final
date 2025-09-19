@@ -47,7 +47,7 @@ async function ShowComments({postId} : commentProps) {
                     href={`/my-list/${comment.user?.userName}`}
                     className="text-purple-400 font-medium hover:text-purple-300 transition-colors"
                   >
-                    u/{comment.user?.userName || "Unknown"}
+                    {comment.user?.userName || "Unknown"}
                   </Link>
                   <span className="text-gray-500 text-sm">
                     {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}

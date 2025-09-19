@@ -87,7 +87,7 @@
                           href={`/my-list/${post.user?.userName}`}
                           className="text-sm font-medium text-white hover:text-purple-400 transition-colors"
                         >
-                          u/{post.user?.userName || "Unknown"}
+                          {post.user?.userName || "Unknown"}
                         </Link>
                         <div className="flex items-center text-xs text-gray-400">
                           <Clock className="h-3 w-3 mr-1" />
